@@ -30,6 +30,7 @@ require "active_support/core_ext/numeric/time"
 
 require "active_storage/version"
 require "active_storage/errors"
+require "active_storage/whatever"
 
 require "marcel"
 
