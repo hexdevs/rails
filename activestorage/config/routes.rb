@@ -77,6 +77,8 @@ if ActiveStorage.draw_routes
       end
     end
   end
+# TODO: Extract the disk service routes to a different file
+# using the draw method
 elsif ActiveStorage.disk_service_enabled?
   Rails.application.routes.draw do
     scope ActiveStorage.routes_prefix do

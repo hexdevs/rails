@@ -30,7 +30,6 @@ require "active_support/core_ext/numeric/time"
 
 require "active_storage/version"
 require "active_storage/errors"
-require "active_storage/whatever"
 
 require "marcel"
 
@@ -68,6 +67,12 @@ module ActiveStorage
 
   mattr_accessor :replace_on_assign_to_many, default: false
   mattr_accessor :track_variants, default: false
+
+  # Should we add this check here or put it in another file?
+  def self.disk_service_enabled?
+    # Is this the right way to check if the current storage adapter is using the disk service?
+    Blob.services.fetch(:local).is_a? Service::DiskService
+  end
 
   module Transformers
     extend ActiveSupport::Autoload
