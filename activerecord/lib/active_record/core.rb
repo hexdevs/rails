@@ -17,7 +17,7 @@ module ActiveRecord
       # Accepts a logger conforming to the interface of Log4r which is then
       # passed on to any new database connections made and which can be
       # retrieved on both a class and instance level by calling +logger+.
-      mattr_accessor :logger, instance_writer: false
+      class_attribute :logger, instance_writer: false
 
       ##
       # :singleton-method:
@@ -209,7 +209,6 @@ module ActiveRecord
           self == Base.application_record_class
         else
           if defined?(ApplicationRecord) && self == ApplicationRecord
-            Base.application_record_class = self
             true
           end
         end
