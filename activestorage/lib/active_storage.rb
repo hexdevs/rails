@@ -71,7 +71,8 @@ module ActiveStorage
   # Should we add this check here or put it in another file?
   def self.disk_service_enabled?
     # Is this the right way to check if the current storage adapter is using the disk service?
-    Blob.services.fetch(:local).is_a? Service::DiskService
+    local_service = Blob.services.fetch(:local)
+    local_service&.is_a? Service::DiskService
   end
 
   module Transformers
