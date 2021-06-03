@@ -77,13 +77,10 @@ if ActiveStorage.draw_routes
       end
     end
   end
-# TODO: Extract the disk service routes to a different file
-# using the draw method
 elsif ActiveStorage.disk_service_enabled?
   Rails.application.routes.draw do
-    scope ActiveStorage.routes_prefix do
-      get  "/disk/:encoded_key/*filename" => "active_storage/disk#show", as: :rails_disk_service
-      put  "/disk/:encoded_token" => "active_storage/disk#update", as: :update_rails_disk_service
-    end
+    # this raises an error - the file `/routes/disk_service.rb` does not get loaded:
+    # "Your router tried to #draw the external file disk_service.rb, but the file was not found"
+    draw :disk_service
   end
 end
