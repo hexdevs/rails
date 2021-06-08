@@ -83,9 +83,6 @@ if ActiveStorage.draw_routes
   end
 elsif ActiveStorage.disk_service_enabled?
   Rails.application.routes.draw do
-    scope ActiveStorage.routes_prefix do
-      get  "/disk/:encoded_key/*filename" => "active_storage/disk#show", as: :rails_disk_service
-      put  "/disk/:encoded_token" => "active_storage/disk#update", as: :update_rails_disk_service
-    end
+    draw :disk_service
   end
 end
