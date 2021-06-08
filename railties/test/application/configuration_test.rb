@@ -3014,9 +3014,9 @@ module ApplicationTests
       output = rails("routes")
       assert_not_includes(output, "rails_service_blob")
       assert_not_includes(output, "rails_blob_representation")
-      assert_not_includes(output, "rails_disk_service")
-      assert_not_includes(output, "update_rails_disk_service")
       assert_not_includes(output, "rails_direct_uploads")
+      assert_includes(output, "rails_disk_service")
+      assert_includes(output, "update_rails_disk_service")
     end
 
     test "ActiveStorage.video_preview_arguments uses the old arguments without Rails 7 defaults" do

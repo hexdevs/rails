@@ -68,8 +68,12 @@ module ActiveStorage
 
   mattr_accessor :replace_on_assign_to_many, default: false
   mattr_accessor :track_variants, default: false
-
   mattr_accessor :video_preview_arguments, default: "-y -vframes 1 -f image2"
+
+  def self.disk_service_enabled?
+    local_service = Blob.services.fetch(:local)
+    local_service&.is_a? Service::DiskService
+  end
 
   module Transformers
     extend ActiveSupport::Autoload
