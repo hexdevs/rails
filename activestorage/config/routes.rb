@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
-if ActiveStorage.draw_routes
-  Rails.application.routes.draw do
+Rails.application.routes.draw do
+  if ActiveStorage.draw_routes
     draw :active_storage
-  end
-elsif ActiveStorage.disk_service_enabled?
-  Rails.application.routes.draw do
+  elsif ActiveStorage.disk_service_enabled?
     draw :disk_service
   end
 end
