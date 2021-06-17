@@ -3007,6 +3007,7 @@ module ApplicationTests
     test "ActiveStorage.draw_routes can be configured via config.active_storage.draw_routes" do
       app_file "config/environments/development.rb", <<-RUBY
         Rails.application.configure do
+          config.active_storage.service = :local
           config.active_storage.draw_routes = false
         end
       RUBY
