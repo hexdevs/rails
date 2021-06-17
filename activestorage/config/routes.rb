@@ -16,67 +16,69 @@ Rails.application.routes.draw do
       post "/direct_uploads" => "active_storage/direct_uploads#create", as: :rails_direct_uploads
     end
 
-  direct :rails_representation do |representation, options|
-    route_for(ActiveStorage.resolve_model_to_route, representation, options)
-  end
+    direct :rails_representation do |representation, options|
+      route_for(ActiveStorage.resolve_model_to_route, representation, options)
+    end
 
-  resolve("ActiveStorage::Variant") { |variant, options| route_for(ActiveStorage.resolve_model_to_route, variant, options) }
-  resolve("ActiveStorage::VariantWithRecord") { |variant, options| route_for(ActiveStorage.resolve_model_to_route, variant, options) }
-  resolve("ActiveStorage::Preview") { |preview, options| route_for(ActiveStorage.resolve_model_to_route, preview, options) }
+    resolve("ActiveStorage::Variant") { |variant, options| route_for(ActiveStorage.resolve_model_to_route, variant, options) }
+    resolve("ActiveStorage::VariantWithRecord") { |variant, options| route_for(ActiveStorage.resolve_model_to_route, variant, options) }
+    resolve("ActiveStorage::Preview") { |preview, options| route_for(ActiveStorage.resolve_model_to_route, preview, options) }
 
-  direct :rails_blob do |blob, options|
-    route_for(ActiveStorage.resolve_model_to_route, blob, options)
-  end
+    direct :rails_blob do |blob, options|
+      route_for(ActiveStorage.resolve_model_to_route, blob, options)
+    end
 
-  resolve("ActiveStorage::Blob")       { |blob, options| route_for(ActiveStorage.resolve_model_to_route, blob, options) }
-  resolve("ActiveStorage::Attachment") { |attachment, options| route_for(ActiveStorage.resolve_model_to_route, attachment.blob, options) }
+    resolve("ActiveStorage::Blob")       { |blob, options| route_for(ActiveStorage.resolve_model_to_route, blob, options) }
+    resolve("ActiveStorage::Attachment") { |attachment, options| route_for(ActiveStorage.resolve_model_to_route, attachment.blob, options) }
 
-  direct :rails_storage_proxy do |model, options|
-    if model.respond_to?(:signed_id)
-      route_for(
-        :rails_service_blob_proxy,
-        model.signed_id,
-        model.filename,
-        options
-      )
-    else
-      signed_blob_id = model.blob.signed_id
-      variation_key  = model.variation.key
-      filename       = model.blob.filename
+    direct :rails_storage_proxy do |model, options|
+      if model.respond_to?(:signed_id)
+        route_for(
+          :rails_service_blob_proxy,
+          model.signed_id,
+          model.filename,
+          options
+        )
+      else
+        signed_blob_id = model.blob.signed_id
+        variation_key  = model.variation.key
+        filename       = model.blob.filename
 
-      route_for(
-        :rails_blob_representation_proxy,
-        signed_blob_id,
-        variation_key,
-        filename,
-        options
-      )
+        route_for(
+          :rails_blob_representation_proxy,
+          signed_blob_id,
+          variation_key,
+          filename,
+          options
+        )
+      end
+    end
+
+    direct :rails_storage_redirect do |model, options|
+      if model.respond_to?(:signed_id)
+        route_for(
+          :rails_service_blob,
+          model.signed_id,
+          model.filename,
+          options
+        )
+      else
+        signed_blob_id = model.blob.signed_id
+        variation_key  = model.variation.key
+        filename       = model.blob.filename
+
+        route_for(
+          :rails_blob_representation,
+          signed_blob_id,
+          variation_key,
+          filename,
+          options
+        )
+      end
     end
   end
-
-  direct :rails_storage_redirect do |model, options|
-    if model.respond_to?(:signed_id)
-      route_for(
-        :rails_service_blob,
-        model.signed_id,
-        model.filename,
-        options
-      )
-    else
-      signed_blob_id = model.blob.signed_id
-      variation_key  = model.variation.key
-      filename       = model.blob.filename
-
-      route_for(
-        :rails_blob_representation,
-        signed_blob_id,
-        variation_key,
-        filename,
-        options
-      )
-    end
-  end
-  elsif ActiveStorage.disk_service_enabled?
+  # Always draw ActiveStorage when draw_routes is true or current storage adapter is a disk_service
+  if ActiveStorage.disk_service_enabled? || ActiveStorage.draw_routes
     scope ActiveStorage.routes_prefix do
       get  "/disk/:encoded_key/*filename" => "active_storage/disk#show", as: :rails_disk_service
       put  "/disk/:encoded_token" => "active_storage/disk#update", as: :update_rails_disk_service
