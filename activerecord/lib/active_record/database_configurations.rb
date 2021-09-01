@@ -244,6 +244,7 @@ module ActiveRecord
       end
 
       def build_db_config_from_hash(env_name, name, config)
+        biniding.pry
         if config.has_key?(:url)
           url = config[:url]
           config_without_url = config.dup

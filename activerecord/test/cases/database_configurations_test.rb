@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "cases/helper"
+require "pry"
 
 class DatabaseConfigurationsTest < ActiveRecord::TestCase
   unless in_memory_db?
@@ -95,6 +96,25 @@ class DatabaseConfigurationsTest < ActiveRecord::TestCase
     assert_equal "primary", config.name
     assert_equal ActiveRecord::ConnectionHandling::DEFAULT_ENV.call, config.env_name
     assert_equal ":memory:", config.database
+  end
+
+  def test_mysql_prepared_statement
+    config = ActiveRecord::DatabaseConfigurations.new({
+      "primary" => {
+        "adapter" => "randomadapter"
+      },
+      ActiveRecord::ConnectionHandling::DEFAULT_ENV.call => {
+        "primary" => {
+          "adapter" => "mysql2",
+          # "database" => ":memory:"
+        }
+      }
+    }).find_db_config("primary")
+
+    assert_deprecated do
+      # binding.pry
+      assert_equal "hello", config
+    end
   end
 
   def test_to_h_turns_db_config_object_back_into_a_hash_and_is_deprecated

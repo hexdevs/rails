@@ -7,6 +7,8 @@ require "models/post"
 require "models/author"
 require "models/event"
 
+require "pry"
+
 module ActiveRecord
   class AdapterTest < ActiveRecord::TestCase
     def setup
@@ -126,6 +128,15 @@ module ActiveRecord
     end
 
     if current_adapter?(:Mysql2Adapter)
+      def test_update_prepared_statement_mysql2
+        b = Book.create(name: "my \x00 book")
+        b.reload
+        assert_equal "my \x00 book", b.name
+        b.update(name: "my other \x00 book")
+        b.reload
+        assert_equal "my other \x00 book", b.name
+      end
+
       def test_charset
         assert_not_nil @connection.charset
         assert_not_equal "character_set_database", @connection.charset
